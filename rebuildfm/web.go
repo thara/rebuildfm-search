@@ -24,9 +24,6 @@ func RunServer(client *elastic.Client) {
 	}))
 
 	e.Static("/", "public")
-	e.GET("/", func(c echo.Context) error {
-		return c.String(http.StatusOK, "Hello, World!!!!")
-	})
 
 	e.GET("/episodes", func(c echo.Context) error {
 		castName := c.QueryParam("cast_name")
