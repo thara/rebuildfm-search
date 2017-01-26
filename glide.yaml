@@ -1,0 +1,16 @@
+package: github.com/tomochikahara/rebuildfm-search
+import:
+- package: gopkg.in/olivere/elastic.v5
+- package: github.com/labstack/echo
+  version: v2.0.2
+  subpackages:
+  - engine/standard
+  - engine
+  - log
+- package: github.com/labstack/gommon
+  subpackages:
+  - log
+  - color
+- package: github.com/jteeuwen/go-pkg-rss
+- package: github.com/jteeuwen/go-pkg-xmlx
+- package: github.com/dgrijalva/jwt-go
