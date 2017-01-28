@@ -16,9 +16,10 @@ type APIError struct {
 	Message string
 }
 
-func RunServer(client *elastic.Client) {
+func RunServer(client *elastic.Client, addr string) {
 	// https://echo.labstack.com/guide
 	e := echo.New()
+
 	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
 		Format: "method=${method}, uri=${uri}, status=${status}\n",
 	}))
@@ -38,7 +39,7 @@ func RunServer(client *elastic.Client) {
 		return c.JSON(http.StatusOK, result)
 	})
 
-	e.Run(standard.New(":8080"))
+	e.Run(standard.New(addr))
 }
 
 type SearchResult struct {

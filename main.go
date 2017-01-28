@@ -5,44 +5,97 @@ import (
 	"fmt"
 	rebuildfm "github.com/tomochikahara/rebuildfm-search/rebuildfm"
 	elastic "gopkg.in/olivere/elastic.v5"
+	"log"
 	"os"
 )
 
-var usage = `Usage rebuildfm <Command>
-Commands:
-  polling Polling RSS feed
-  runserver Run web API server
-`
-
 func main() {
+	commands := map[string]command{
+		"polling":   pollingCmd(),
+		"runserver": runserverCmd(),
+	}
 
-	flag.Usage = func() { fmt.Print(usage) }
-	flag.Parse()
-	args := flag.Args()
+	fs := flag.NewFlagSet(os.Args[0], flag.ExitOnError)
+	flag.Usage = func() {
+		fmt.Println("Usage: rebuildfm-search <command> [command options]")
+		for name, cmd := range commands {
+			fmt.Printf("\n%s command:\n", name)
+			cmd.fs.PrintDefaults()
+		}
+
+	}
+
+	fs.Parse(os.Args[1:])
+
+	args := fs.Args()
 	if len(args) == 0 {
-		flag.Usage()
+		fs.Usage()
 		os.Exit(1)
 	}
 
-	// Create a client
-	client, err := elastic.NewClient()
-	if err != nil {
-		panic(err)
+	if cmd, ok := commands[args[0]]; !ok {
+		log.Fatal("Unknown command: %s", args[0])
+	} else if err := cmd.fn(args[1:]); err != nil {
+		log.Fatal(err)
+		os.Exit(1)
 	}
+}
 
-	switch args[0] {
-	case "polling":
-		fmt.Println("Start polling RSS feed.")
+type command struct {
+	fs *flag.FlagSet
+	fn func(args []string) error
+}
+
+func pollingCmd() command {
+	fs := flag.NewFlagSet("rebuildfm-search polling", flag.ExitOnError)
+
+	var elasticUrl string
+	fs.StringVar(&elasticUrl, "elastic-url", "http://localhost:9200", "ElasticSearch URL")
+
+	return command{fs, func(args []string) error {
+		fs.Parse(args)
+
+		// Create a client
+		client, err := elastic.NewClient(
+			elastic.SetURL(elasticUrl),
+			elastic.SetMaxRetries(10))
+		if err != nil {
+			return err
+		}
 
 		rebuildfm.SetupIndex(client)
 		rebuildfm.PollFeed(client, "http://feeds.rebuild.fm/rebuildfm", 5, nil)
 
-	case "runserver":
-		fmt.Println("Start running Web API server..")
-		rebuildfm.RunServer(client)
+		return nil
+	}}
+}
 
-	default:
-		flag.Usage()
-		os.Exit(1)
-	}
+type runserverOpts struct {
+	elasticUrl string
+	addr       string
+}
+
+func runserverCmd() command {
+	fs := flag.NewFlagSet("rebuildfm-search runserver", flag.ExitOnError)
+	opts := &runserverOpts{}
+
+	fs.StringVar(&opts.elasticUrl, "elastic-url", "http://localhost:9200", "ElasticSearch URL")
+	fs.StringVar(&opts.addr, "addr", ":8080", "Listen Address and Port")
+
+	return command{fs, func(args []string) error {
+		fs.Parse(args)
+
+		// Create a client
+		client, err := elastic.NewClient(
+			elastic.SetURL(opts.elasticUrl),
+			elastic.SetMaxRetries(10))
+		if err != nil {
+			return err
+		}
+
+		fmt.Printf("Start running Web API server at %s ..\n", opts.addr)
+		rebuildfm.RunServer(client, opts.addr)
+
+		return nil
+	}}
 }
