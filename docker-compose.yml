@@ -1,14 +1,30 @@
 version: '2'
 
 services:
-  app:
-    build: .
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: runserver --elastic-url "http://elasticsearch:9200" --addr ":8080"
     volumes:
      - .:/go/src/github.com/tomochikahara/rebuildfm-search
     ports:
-      - "8080:8080"
+      - 8080:8080
+    links:
+      - elasticsearch
+
+  polling:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: polling --elastic-url "http://elasticsearch:9200"
+    volumes:
+     - .:/go/src/github.com/tomochikahara/rebuildfm-search
     links:
       - elasticsearch
 
   elasticsearch:
     image: elasticsearch
+    volumes:
+      # https://github.com/docker-library/elasticsearch/issues/74
+      - "/tmp/esdata:/usr/share/elasticsearch/data"

@@ -55,10 +55,13 @@ func pollingCmd() command {
 	return command{fs, func(args []string) error {
 		fs.Parse(args)
 
+		fmt.Printf("\nelasticsearch URL: %s\n", elasticUrl)
+
 		// Create a client
+		// See https://github.com/olivere/elastic/wiki/Connection-Problems#how-to-figure-out-connection-problems
 		client, err := elastic.NewClient(
 			elastic.SetURL(elasticUrl),
-			elastic.SetMaxRetries(10))
+			elastic.SetSniff(false))
 		if err != nil {
 			return err
 		}
@@ -86,9 +89,10 @@ func runserverCmd() command {
 		fs.Parse(args)
 
 		// Create a client
+		// See https://github.com/olivere/elastic/wiki/Connection-Problems#how-to-figure-out-connection-problems
 		client, err := elastic.NewClient(
 			elastic.SetURL(opts.elasticUrl),
-			elastic.SetMaxRetries(10))
+			elastic.SetSniff(false))
 		if err != nil {
 			return err
 		}
