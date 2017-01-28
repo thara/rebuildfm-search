@@ -1,9 +1,14 @@
-app:
-  build: .
-  ports:
-    - "5000:5000"
-  links:
-    - elasticsearch
+version: '2'
 
-elasticsearch:
-  image: elasticsearch
+services:
+  app:
+    build: .
+    volumes:
+     - .:/go/src/github.com/tomochikahara/rebuildfm-search
+    ports:
+      - "8080:8080"
+    links:
+      - elasticsearch
+
+  elasticsearch:
+    image: elasticsearch
