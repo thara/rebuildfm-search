@@ -70,7 +70,7 @@ func SearchEpisodes(client *elastic.Client, castName string, title string, note 
 		From(0).Size(100).
 		Pretty(true)
 
-	result, err := s.Do(context.TODO())
+	result, err := s.Do(context.Background())
 
 	episodes := make([]*Episode, len(result.Hits.Hits))
 

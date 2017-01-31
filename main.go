@@ -60,8 +60,7 @@ func pollingCmd() command {
 		// Create a client
 		// See https://github.com/olivere/elastic/wiki/Connection-Problems#how-to-figure-out-connection-problems
 		client, err := elastic.NewClient(
-			elastic.SetURL(elasticUrl),
-			elastic.SetSniff(false))
+			elastic.SetURL(elasticUrl), elastic.SetSniff(false))
 		if err != nil {
 			return err
 		}
@@ -91,8 +90,7 @@ func runserverCmd() command {
 		// Create a client
 		// See https://github.com/olivere/elastic/wiki/Connection-Problems#how-to-figure-out-connection-problems
 		client, err := elastic.NewClient(
-			elastic.SetURL(opts.elasticUrl),
-			elastic.SetSniff(false))
+			elastic.SetURL(opts.elasticUrl), elastic.SetSniff(false))
 		if err != nil {
 			return err
 		}

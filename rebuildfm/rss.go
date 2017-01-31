@@ -13,7 +13,8 @@ import (
 )
 
 func PollFeed(client *elastic.Client, uri string, timeout int, cr xmlx.CharsetFunc) {
-	feed := rss.New(timeout, true, chanHandler, itemHandler)
+	ih := itemHandler(client)
+	feed := rss.New(timeout, true, chanHandler, ih)
 
 	for {
 		if err := feed.Fetch(uri, cr); err != nil {
@@ -29,52 +30,48 @@ func chanHandler(feed *rss.Feed, newchannels []*rss.Channel) {
 	fmt.Printf("%d new channel(s) in %s\n", len(newchannels), feed.Url)
 }
 
-func itemHandler(feed *rss.Feed, ch *rss.Channel, newitems []*rss.Item) {
+func itemHandler(client *elastic.Client) rss.ItemHandlerFunc {
 
-	client, err := elastic.NewClient()
-	if err != nil {
-		// Handle error
-		panic(err)
-	}
+	return func(feed *rss.Feed, ch *rss.Channel, newitems []*rss.Item) {
+		l := len(newitems)
+		episodes := make([]*Episode, l)
 
-	l := len(newitems)
-	episodes := make([]*Episode, l)
+		for i, item := range newitems {
+			fmt.Printf("%s\n", item.Title)
+			fmt.Printf("%s\n", item.Links[0].Href)
+			fmt.Printf("%s\n", item.Description)
 
-	for i, item := range newitems {
-		fmt.Printf("%s\n", item.Title)
-		fmt.Printf("%s\n", item.Links[0].Href)
-		fmt.Printf("%s\n", item.Description)
+			itunes := item.Extensions["http://www.itunes.com/dtds/podcast-1.0.dtd"]
+			subtitle := itunes["subtitle"][0].Value
 
-		itunes := item.Extensions["http://www.itunes.com/dtds/podcast-1.0.dtd"]
-		subtitle := itunes["subtitle"][0].Value
+			// duration := itunes["duration"][0].Value
+			// fmt.Printf("duration = %s\n", duration)
 
-		// duration := itunes["duration"][0].Value
-		// fmt.Printf("duration = %s\n", duration)
+			contributors := item.Extensions["http://www.w3.org/2005/Atom"]["contributor"]
 
-		contributors := item.Extensions["http://www.w3.org/2005/Atom"]["contributor"]
+			casts := make([]*Cast, len(contributors))
+			for j, c := range contributors {
+				name := c.Childrens["name"][0].Value
+				uri := c.Childrens["uri"][0].Value
+				casts[j] = &Cast{Name: name, Uri: uri}
+			}
 
-		casts := make([]*Cast, len(contributors))
-		for j, c := range contributors {
-			name := c.Childrens["name"][0].Value
-			uri := c.Childrens["uri"][0].Value
-			casts[j] = &Cast{Name: name, Uri: uri}
+			no := l - i
+
+			episode := &Episode{
+				No:          no,
+				Title:       item.Title,
+				Link:        item.Links[0].Href,
+				Description: item.Description,
+				Subtitle:    subtitle,
+				Casts:       casts,
+			}
+			episodes[i] = episode
 		}
+		AddEpisodes(client, episodes)
 
-		no := l - i
-
-		episode := &Episode{
-			No:          no,
-			Title:       item.Title,
-			Link:        item.Links[0].Href,
-			Description: item.Description,
-			Subtitle:    subtitle,
-			Casts:       casts,
-		}
-		episodes[i] = episode
+		fmt.Printf("%d new item(s) in %s\n", len(episodes), feed.Url)
 	}
-	AddEpisodes(client, episodes)
-
-	fmt.Printf("%d new item(s) in %s\n", len(episodes), feed.Url)
 }
 
 func charsetReader(charset string, r io.Reader) (io.Reader, error) {

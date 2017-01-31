@@ -20,14 +20,15 @@ type Cast struct {
 }
 
 func SetupIndex(client *elastic.Client) {
-	exists, err := client.IndexExists(IndexName).Do(context.TODO())
+	ctx := context.Background()
+	exists, err := client.IndexExists(IndexName).Do(ctx)
 	if err != nil {
 		panic(err)
 	}
 
 	if !exists {
 		// Create an index
-		_, err := client.CreateIndex(IndexName).Do(context.TODO())
+		_, err := client.CreateIndex(IndexName).Do(ctx)
 		if err != nil {
 			// Handle error
 			panic(err)
