@@ -9,11 +9,11 @@ services:
     volumes:
      - .:/go/src/github.com/tomochikahara/rebuildfm-search
     ports:
-      - 8080:8080
+      - "80:8080"
     links:
       - elasticsearch
 
-  polling:
+  aggregator:
     build:
       context: .
       dockerfile: Dockerfile
