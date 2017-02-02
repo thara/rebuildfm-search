@@ -11,7 +11,7 @@ import (
 
 func main() {
 	commands := map[string]command{
-		"polling":   pollingCmd(),
+		"aggregate": aggregateCmd(),
 		"runserver": runserverCmd(),
 	}
 
@@ -46,8 +46,8 @@ type command struct {
 	fn func(args []string) error
 }
 
-func pollingCmd() command {
-	fs := flag.NewFlagSet("rebuildfm-search polling", flag.ExitOnError)
+func aggregateCmd() command {
+	fs := flag.NewFlagSet("rebuildfm-search aggregate", flag.ExitOnError)
 
 	var elasticUrl string
 	fs.StringVar(&elasticUrl, "elastic-url", "http://localhost:9200", "ElasticSearch URL")

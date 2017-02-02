@@ -17,7 +17,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    command: polling --elastic-url "http://elasticsearch:9200"
+    command: aggregate --elastic-url "http://elasticsearch:9200"
     volumes:
      - .:/go/src/github.com/tomochikahara/rebuildfm-search
     links:
