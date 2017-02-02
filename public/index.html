@@ -20,10 +20,9 @@
   <script type="text/javascript" src="elm.js"></script>
 
   <script type="text/javascript">
-    Elm.Search.fullscreen();
-    // Alternatively, embed the elm app in an element like this:
-    // var div = document.getElementById('myDiv');
-    // Elm.embed(Elm.Index, div);
+    Elm.Search.fullscreen({
+      apiBaseUrl: window.location.href
+    });
   </script>
 </body>
 </html>

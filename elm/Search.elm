@@ -14,9 +14,9 @@ import Json.Decode as Json
 -- MAIN
 
 
-main : Program Never Model Msg
+main : Program Flags Model Msg
 main =
-    Html.program
+    Html.programWithFlags
         { init = init
         , view = view
         , update = update
@@ -30,12 +30,18 @@ type alias Model =
   , queryTitle: String
   , queryNote: String
   , episodes : List Episode
+  , apiBaseUrl : String
   }
 
 
 type alias Cast =
     { name: String
     , uri: String}
+
+
+type alias Flags =
+    { apiBaseUrl : String
+    }
 
 
 type alias Episode =
@@ -49,8 +55,8 @@ type alias Episode =
   }
 
 
-init : ( Model, Cmd Msg )
-init =
+init : Flags -> ( Model, Cmd Msg )
+init flags =
     (
       { queryCastName = ""
       , queryTitle = ""
@@ -71,6 +77,7 @@ init =
 --            , starring = ["kazuho", "miyagawa"]
 --            }
           ]
+      , apiBaseUrl = flags.apiBaseUrl
       },
       Cmd.none
     )
@@ -215,8 +222,7 @@ update msg model =
     InputNote s -> ( {model | queryNote = s}, Cmd.none)
 
     SearchEpisodes ->
-        (model, searchEpisodes model.queryCastName model.queryTitle model.queryNote)
-
+        (model, searchEpisodes model)
     ReceiveEpisodes (Ok episodes) ->
         ( { model | episodes = episodes}, Cmd.none)
     ReceiveEpisodes (Err _) ->
@@ -224,10 +230,10 @@ update msg model =
 
 
 
-searchEpisodes : String -> String -> String -> Cmd Msg
-searchEpisodes castName title note =
+searchEpisodes : Model -> Cmd Msg
+searchEpisodes model =
     let
-        url = "http://127.0.0.1:8080/episodes?cast_name=" ++ castName ++ "&title=" ++ title ++ "&note=" ++ note
+        url = model.apiBaseUrl ++ "episodes?cast_name=" ++ model.queryCastName ++ "&title=" ++ model.queryTitle ++ "&note=" ++ model.queryNote
         request =
             Http.request
                 { method = "GET"
