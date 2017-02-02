@@ -13,6 +13,10 @@ import (
 )
 
 func PollFeed(client *elastic.Client, uri string, timeout int, cr xmlx.CharsetFunc) {
+
+	ClearEpisodes(client)
+	fmt.Print("Clear All episodes.\n")
+
 	ih := itemHandler(client)
 	feed := rss.New(timeout, true, chanHandler, ih)
 
@@ -37,16 +41,10 @@ func itemHandler(client *elastic.Client) rss.ItemHandlerFunc {
 		episodes := make([]*Episode, l)
 
 		for i, item := range newitems {
-			fmt.Printf("%s\n", item.Title)
-			fmt.Printf("%s\n", item.Links[0].Href)
-			fmt.Printf("%s\n", item.Description)
+			fmt.Printf("%s\t%s\n", item.Title, item.Links[0].Href)
 
 			itunes := item.Extensions["http://www.itunes.com/dtds/podcast-1.0.dtd"]
 			subtitle := itunes["subtitle"][0].Value
-
-			// duration := itunes["duration"][0].Value
-			// fmt.Printf("duration = %s\n", duration)
-
 			contributors := item.Extensions["http://www.w3.org/2005/Atom"]["contributor"]
 
 			casts := make([]*Cast, len(contributors))

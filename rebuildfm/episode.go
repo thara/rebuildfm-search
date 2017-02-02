@@ -36,6 +36,14 @@ func SetupIndex(client *elastic.Client) {
 	}
 }
 
+func ClearEpisodes(client *elastic.Client) {
+	ctx := context.Background()
+	_, err := client.DeleteIndex(IndexName).Do(ctx)
+	if err != nil {
+		panic(err)
+	}
+}
+
 func AddEpisodes(client *elastic.Client, episodes []*Episode) {
 	service := elastic.NewBulkService(client)
 
