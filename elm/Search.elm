@@ -233,7 +233,7 @@ update msg model =
 searchEpisodes : Model -> Cmd Msg
 searchEpisodes model =
     let
-        url = model.apiBaseUrl ++ "episodes?cast_name=" ++ model.queryCastName ++ "&title=" ++ model.queryTitle ++ "&note=" ++ model.queryNote
+        url = model.apiBaseUrl ++ "/episodes?cast_name=" ++ model.queryCastName ++ "&title=" ++ model.queryTitle ++ "&note=" ++ model.queryNote
         request =
             Http.request
                 { method = "GET"

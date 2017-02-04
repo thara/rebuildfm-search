@@ -26,7 +26,7 @@ func RunServer(client *elastic.Client, addr string) {
 
 	e.Static("/", "public")
 
-	e.GET("/episodes", func(c echo.Context) error {
+	e.GET("/_api/episodes", func(c echo.Context) error {
 		castName := c.QueryParam("cast_name")
 		title := c.QueryParam("title")
 		note := c.QueryParam("note")
