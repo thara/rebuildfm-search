@@ -15,6 +15,10 @@ RUN chmod +x /run.sh
 
 ENV COMMAND $command
 
-ENTRYPOINT ["dumb-init", "/run.sh"]
+ADD public /go/src/github.com/tomochikahara/rebuildfm-search/public
+ADD rebuildfm /go/src/github.com/tomochikahara/rebuildfm-search/rebuildfm
+ADD main.go /go/src/github.com/tomochikahara/rebuildfm-search/main.go
+ADD glide.lock /go/src/github.com/tomochikahara/rebuildfm-search/glide.lock
+ADD glide.yaml /go/src/github.com/tomochikahara/rebuildfm-search/glide.yaml
 
-EXPOSE 8080
+ENTRYPOINT ["dumb-init", "/run.sh"]
