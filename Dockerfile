@@ -8,17 +8,16 @@ RUN curl -s https://glide.sh/get | sh
 RUN wget https://github.com/Yelp/dumb-init/releases/download/v1.0.0/dumb-init_1.0.0_amd64.deb
 RUN dpkg -i dumb-init_*.deb
 
-WORKDIR /go/src/github.com/tomochikahara/rebuildfm-search
-
 COPY run.sh /
 RUN chmod +x /run.sh
+RUN mkdir -p /go/src/github.com/tomochikahara/rebuildfm-search
+WORKDIR /go/src/github.com/tomochikahara/rebuildfm-search
+
+COPY glide.lock /go/src/github.com/tomochikahara/rebuildfm-search
+COPY glide.yaml /go/src/github.com/tomochikahara/rebuildfm-search
+COPY public /go/src/github.com/tomochikahara/rebuildfm-search/public
+COPY rebuildfm /go/src/github.com/tomochikahara/rebuildfm-search/rebuildfm
+COPY main.go /go/src/github.com/tomochikahara/rebuildfm-search
 
 ENV COMMAND $command
-
-ADD public /go/src/github.com/tomochikahara/rebuildfm-search/public
-ADD rebuildfm /go/src/github.com/tomochikahara/rebuildfm-search/rebuildfm
-ADD main.go /go/src/github.com/tomochikahara/rebuildfm-search/main.go
-ADD glide.lock /go/src/github.com/tomochikahara/rebuildfm-search/glide.lock
-ADD glide.yaml /go/src/github.com/tomochikahara/rebuildfm-search/glide.yaml
-
 ENTRYPOINT ["dumb-init", "/run.sh"]
