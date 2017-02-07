@@ -2,7 +2,7 @@
 WIP
 
 
-## Deployt to DigitalOcean
+## Deploy to DigitalOcean
 
 ```
 $ docker-machine create --driver digitalocean \
