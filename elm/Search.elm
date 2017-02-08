@@ -97,6 +97,11 @@ view model =
                 [ h1
                     [ class "display-3" ]
                     [ text "Rebuild.fm Search" ]
+                , p [ class "lead" ]
+                    [ text "Rebuild.fm Searchは "
+                    , a [ href "https://rebuild.fm" ] [ text "Rebuild.fm" ]
+                    , text " のエピソード検索サービス です。"
+                    ]
                 , viewInput model
                 ]
             , div
