@@ -107,7 +107,7 @@ view model =
             [ class "footer" ]
             [ div
                 [ class "container" ]
-                [ span [ class "text-muted" ] [ text "Rebuild.fm Search © 2016" ] ]
+                [ span [ class "text-muted" ] [ text "© 2017 Tomochika Hara" ] ]
             ]
         ]
 
