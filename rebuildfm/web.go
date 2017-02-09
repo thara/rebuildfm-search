@@ -45,10 +45,13 @@ func RunServer(client *elastic.Client, addr string, apiBaseUrl string) {
 
 	e.Static("/", "static")
 
-	e.GET("/index.html", func(c echo.Context) error {
+	IndexPageFunc := func(c echo.Context) error {
 		page := &IndexPage{ApiBaseUrl: apiBaseUrl}
 		return c.Render(http.StatusOK, "index.html", page)
-	})
+	}
+
+	e.GET("/", IndexPageFunc)
+	e.GET("/index.html", IndexPageFunc)
 
 	e.GET("/_api/episodes", func(c echo.Context) error {
 		castName := c.QueryParam("cast_name")
