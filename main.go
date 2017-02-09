@@ -75,6 +75,7 @@ func aggregateCmd() command {
 type runserverOpts struct {
 	elasticUrl string
 	addr       string
+	siteUrl    string
 }
 
 func runserverCmd() command {
@@ -83,6 +84,7 @@ func runserverCmd() command {
 
 	fs.StringVar(&opts.elasticUrl, "elastic-url", "http://localhost:9200", "ElasticSearch URL")
 	fs.StringVar(&opts.addr, "addr", ":8080", "Listen Address and Port")
+	fs.StringVar(&opts.siteUrl, "siteUrl", "http://127.0.0.1:8080", "API base url")
 
 	return command{fs, func(args []string) error {
 		fs.Parse(args)
@@ -96,7 +98,9 @@ func runserverCmd() command {
 		}
 
 		fmt.Printf("Start running Web API server at %s ..\n", opts.addr)
-		rebuildfm.RunServer(client, opts.addr)
+
+		apiBaseUrl := opts.siteUrl + "/_api"
+		rebuildfm.RunServer(client, opts.addr, apiBaseUrl)
 
 		return nil
 	}}

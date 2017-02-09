@@ -6,6 +6,8 @@ import (
 	"github.com/labstack/echo/middleware"
 	"golang.org/x/net/context"
 	elastic "gopkg.in/olivere/elastic.v5"
+	"html/template"
+	"io"
 	"net/http"
 	"reflect"
 	"strings"
@@ -16,15 +18,37 @@ type APIError struct {
 	Message string
 }
 
-func RunServer(client *elastic.Client, addr string) {
+type Template struct {
+	templates *template.Template
+}
+
+func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
+	return t.templates.ExecuteTemplate(w, name, data)
+}
+
+type IndexPage struct {
+	ApiBaseUrl string
+}
+
+func RunServer(client *elastic.Client, addr string, apiBaseUrl string) {
 	// https://echo.labstack.com/guide
 	e := echo.New()
+
+	t := &Template{
+		templates: template.Must(template.ParseGlob("templates/*.html")),
+	}
+	e.SetRenderer(t)
 
 	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
 		Format: "method=${method}, uri=${uri}, status=${status}\n",
 	}))
 
-	e.Static("/", "public")
+	e.Static("/", "static")
+
+	e.GET("/index.html", func(c echo.Context) error {
+		page := &IndexPage{ApiBaseUrl: apiBaseUrl}
+		return c.Render(http.StatusOK, "index.html", page)
+	})
 
 	e.GET("/_api/episodes", func(c echo.Context) error {
 		castName := c.QueryParam("cast_name")

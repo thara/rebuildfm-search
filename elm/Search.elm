@@ -112,7 +112,11 @@ view model =
             [ class "footer" ]
             [ div
                 [ class "container" ]
-                [ span [ class "text-muted" ] [ text "© 2017 Tomochika Hara" ] ]
+                [ span [ class "text-muted" ]
+                    [ text "© 2017 "
+                    , a [ href "https://twitter.com/zetta1985" ] [ text "Tomochika Hara" ]
+                    ]
+                ]
             ]
         ]
 

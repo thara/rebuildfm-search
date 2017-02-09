@@ -15,7 +15,7 @@ WORKDIR /go/src/github.com/tomochikahara/rebuildfm-search
 
 COPY glide.lock /go/src/github.com/tomochikahara/rebuildfm-search
 COPY glide.yaml /go/src/github.com/tomochikahara/rebuildfm-search
-COPY public /go/src/github.com/tomochikahara/rebuildfm-search/public
+COPY static /go/src/github.com/tomochikahara/rebuildfm-search/static
 COPY rebuildfm /go/src/github.com/tomochikahara/rebuildfm-search/rebuildfm
 COPY main.go /go/src/github.com/tomochikahara/rebuildfm-search
 
