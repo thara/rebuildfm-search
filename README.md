@@ -1,6 +1,6 @@
 # Rebuild.fm Search
 
-Rebuild.fm Search is a search service for [Rebuild.fm](https://rebuild.fm)'s episodes.'
+Rebuild.fm Search is a search service for [Rebuild.fm](https://rebuild.fm)'s episodes.
 
 
 ## Build JS
