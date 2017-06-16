@@ -3,7 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
-	rebuildfm "github.com/tomochikahara/rebuildfm-search/rebuildfm"
+	rebuildfm "github.com/thara/rebuildfm-search/rebuildfm"
 	elastic "gopkg.in/olivere/elastic.v5"
 	"log"
 	"os"

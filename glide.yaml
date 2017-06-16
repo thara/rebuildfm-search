@@ -1,4 +1,4 @@
-package: github.com/tomochikahara/rebuildfm-search
+package: github.com/thara/rebuildfm-search
 import:
 - package: gopkg.in/olivere/elastic.v5
 - package: github.com/labstack/echo
